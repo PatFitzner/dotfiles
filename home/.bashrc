@@ -43,3 +43,5 @@ export PATH="$PATH:/home/pat/.local/bin"
 
 eval "$(register-python-argcomplete pipx)"
 
+
+. "$HOME/.local/share/../bin/env"
