@@ -1,4 +1,4 @@
-Dump at Thu Jan 15 03:17:16 PM CET 2026
+Dump at Sun Jan 18 09:24:05 AM CET 2026
 ------------------------------------
 aether
 alacritty
@@ -68,6 +68,7 @@ gnome-disk-utility
 gnome-keyring
 gnome-themes-extra
 go
+google-cloud-cli
 gpu-screen-recorder
 gst-plugin-pipewire
 gum
@@ -132,6 +133,7 @@ noto-fonts-emoji
 noto-fonts-extra
 nss-mdns
 ntfs-3g
+nvidia-container-toolkit
 nvidia-open-dkms
 nvidia-utils
 obs-studio
