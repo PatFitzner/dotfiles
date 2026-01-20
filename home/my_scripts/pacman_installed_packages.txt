@@ -1,4 +1,4 @@
-Dump at Sun Jan 18 09:24:05 AM CET 2026
+Dump at Tue Jan 20 01:15:01 PM CET 2026
 ------------------------------------
 aether
 alacritty
@@ -61,6 +61,7 @@ fontconfig
 fzf
 game-devices-udev
 gamescope
+gimp
 git
 github-cli
 gnome-calculator
@@ -163,6 +164,7 @@ python-pip
 python-pipx
 python-poetry-core
 python-terminaltexteffects
+python312
 qt5-wayland
 rbenv
 reaper
