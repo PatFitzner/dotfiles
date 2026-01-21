@@ -1,4 +1,4 @@
-Dump at Wed Jan 21 05:50:09 PM CET 2026
+Dump at Wed Jan 21 06:19:28 PM CET 2026
 ------------------------------------
 aether
 alacritty
@@ -215,6 +215,7 @@ ufw-docker
 unzip
 usage
 uwsm
+veracrypt
 virtualbox
 visual-studio-code-bin
 vlc
