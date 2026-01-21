@@ -1,4 +1,4 @@
-Dump at Fri Jan 16 12:23:48 AM CET 2026
+Dump at Wed Jan 21 05:50:09 PM CET 2026
 ------------------------------------
 aether
 alacritty
@@ -19,6 +19,7 @@ brightnessctl
 btop
 btrfs-progs
 calibre
+caligula-bin
 clang
 cups
 cups-browsed
@@ -61,17 +62,23 @@ fontconfig
 fzf
 game-devices-udev
 gamescope
+gimp
 git
 github-cli
 gnome-calculator
+gnome-control-center
 gnome-disk-utility
 gnome-keyring
+gnome-online-accounts
 gnome-themes-extra
 go
+google-chrome
 google-cloud-cli
 gpu-screen-recorder
+grive
 gst-plugin-pipewire
 gum
+gvfs-google
 gvfs-mtp
 gvfs-nfs
 gvfs-smb
@@ -94,6 +101,7 @@ insync
 intel-ucode
 inxi
 iwd
+joplin-appimage
 jq
 kdenlive
 keepassxc
@@ -163,6 +171,7 @@ python-pip
 python-pipx
 python-poetry-core
 python-terminaltexteffects
+python312
 qt5-wayland
 rbenv
 reaper
