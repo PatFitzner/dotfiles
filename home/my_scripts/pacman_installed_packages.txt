@@ -1,4 +1,4 @@
-Dump at Wed Jan 21 08:36:09 AM CET 2026
+Dump at Fri Jan 23 09:21:33 AM CET 2026
 ------------------------------------
 aether
 alacritty
@@ -19,6 +19,7 @@ brightnessctl
 btop
 btrfs-progs
 calibre
+caligula-bin
 clang
 cups
 cups-browsed
@@ -214,6 +215,7 @@ ufw-docker
 unzip
 usage
 uwsm
+veracrypt
 virtualbox
 visual-studio-code-bin
 vlc
