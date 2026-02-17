@@ -45,3 +45,4 @@ eval "$(register-python-argcomplete pipx)"
 
 
 . "$HOME/.local/share/../bin/env"
+export PATH="$HOME/.npm-global/bin:$PATH"
