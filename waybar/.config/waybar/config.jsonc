@@ -7,7 +7,11 @@
   "modules-left": [
     "custom/omarchy",
     "hyprland/workspaces",
+    "mpris",
+    "custom/claude-chat",
     "custom/claude-usage",
+    "cpu#left",
+    "memory",
   ],
   "modules-center": [
     "clock",
@@ -206,6 +210,11 @@
     "icon-size": 12,
     "spacing": 17
   },
+  "custom/claude-chat": {
+    "format": "\udb81\ude96",
+    "on-click": "toggle-claude-dropdown",
+    "tooltip-format": "Claude Code dropdown\n\nSuper + C"
+  },
   "custom/claude-usage": {
     "exec": "~/.local/bin/claude-usage --waybar --browser chrome",
     "return-type": "json",
@@ -214,6 +223,33 @@
     "tooltip": true,
     "on-click": "pkill -RTMIN+8 waybar",
     "signal": 8
+  },
+  "cpu#left": {
+    "interval": 5,
+    "format": "\udb80\udf5b {usage}%",
+    "tooltip-format": "CPU: {usage}%\nLoad: {load}",
+    "on-click": "omarchy-launch-or-focus-tui btop"
+  },
+  "memory": {
+    "interval": 5,
+    "format": "\udb80\udcb9 {percentage}%",
+    "tooltip-format": "RAM: {used:0.1f}G / {total:0.1f}G",
+    "on-click": "omarchy-launch-or-focus-tui btop"
+  },
+  "mpris": {
+    "format": "\uf04a {status_icon} {artist} - {title} \uf04e",
+    "status-icons": {
+      "playing": "\uf04c",
+      "paused": "\uf04b",
+      "stopped": "\uf04d"
+    },
+    "on-click": "playerctl play-pause",
+    "on-click-right": "playerctl next",
+    "on-click-middle": "playerctl previous",
+    "on-scroll-up": "playerctl position 5+",
+    "on-scroll-down": "playerctl position 5-",
+    "max-length": 40,
+    "tooltip-format": "{title}\n{artist}"
   },
   "custom/codex-usage": {
     "exec": "~/.local/bin/codex-usage --waybar --browser chrome",

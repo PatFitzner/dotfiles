@@ -81,6 +81,12 @@ window#waybar {
 
 tooltip {
   padding: 2px;
+  background-color: alpha(@background, 0.5);
+}
+
+#mpris {
+  margin: 0 7.5px;
+  font-family: 'OpenDyslexic Nerd Font';
 }
 
 #custom-update {
@@ -113,6 +119,17 @@ tooltip {
 
 #custom-voxtype.recording {
   color: #a55555;
+}
+
+/* Claude Code dropdown toggle */
+#custom-claude-chat {
+  min-width: 12px;
+  margin: 0 7.5px;
+  transition: all 0.3s ease;
+}
+
+#custom-claude-chat:hover {
+  color: #de7356;
 }
 
 /* Claude Code Usage Monitor Styling */
