@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Toggle Claude Code dropdown terminal
+# If the window doesn't exist yet, launch it. Then toggle the special workspace.
+
+CLASS="com.omarchy.claude"
+
+if ! hyprctl clients -j | jq -e '.[] | select(.initialClass == "'"$CLASS"'")' > /dev/null 2>&1; then
+    uwsm app -- ghostty --class="$CLASS" -e claude-dropdown-session &
+    sleep 0.5
+    hyprctl dispatch togglespecialworkspace claude 2>/dev/null
+else
+    hyprctl dispatch togglespecialworkspace claude
+fi
