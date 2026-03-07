@@ -10,6 +10,7 @@
     "mpris",
     "custom/claude-chat",
     "custom/claude-usage",
+    "custom/opencode-usage",
     "cpu#left",
     "memory",
   ],
@@ -250,6 +251,15 @@
     "on-scroll-down": "playerctl position 5-",
     "max-length": 40,
     "tooltip-format": "{title}\n{artist}"
+  },
+  "custom/opencode-usage": {
+    "exec": "~/.local/bin/opencode-usage --waybar",
+    "return-type": "json",
+    "interval": 120,
+    "format": "{}",
+    "tooltip": true,
+    "on-click": "pkill -RTMIN+10 waybar",
+    "signal": 10
   },
   "custom/codex-usage": {
     "exec": "~/.local/bin/codex-usage --waybar --browser chrome",
