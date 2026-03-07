@@ -20,7 +20,7 @@
     "custom/screenrecording-indicator"
   ],
   "modules-right": [
-    "group/tray",
+    "tray",
     "bluetooth",
     "network",
     "pulseaudio",
