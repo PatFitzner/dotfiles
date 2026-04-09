@@ -26,6 +26,7 @@
     "network",
     "pulseaudio",
     "cpu",
+    "custom/mouse-battery",
     "battery"
   ],
   "hyprland/workspaces": {
@@ -143,6 +144,13 @@
       "warning": 20,
       "critical": 10
     }
+  },
+  "custom/mouse-battery": {
+    "exec": "~/.local/bin/waybar-mouse-battery",
+    "return-type": "json",
+    "interval": 60,
+    "on-click": "solaar",
+    "tooltip": true
   },
   "bluetooth": {
     "format": "\uf294",

@@ -58,9 +58,18 @@ window#waybar {
 #pulseaudio,
 #custom-omarchy,
 #custom-screenrecording-indicator,
-#custom-update {
+#custom-update,
+#custom-mouse-battery {
   min-width: 12px;
   margin: 0 7.5px;
+}
+
+#custom-mouse-battery.warning {
+  color: #f9e2af;
+}
+
+#custom-mouse-battery.critical {
+  color: #f38ba8;
 }
 
 #tray {

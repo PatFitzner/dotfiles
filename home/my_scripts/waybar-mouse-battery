@@ -1,0 +1,23 @@
+#!/bin/bash
+# Waybar module: Logitech mouse battery via solaar
+
+battery_line=$(solaar show "G703" 2>/dev/null | grep -oP 'Battery: \K\d+% \d+mV , BatteryStatus\.\w+' | head -1)
+
+if [[ -z "$battery_line" ]]; then
+    echo '{"text": "", "tooltip": "", "class": "disconnected"}'
+    exit 0
+fi
+
+percent=$(echo "$battery_line" | grep -oP '^\d+')
+voltage=$(echo "$battery_line" | grep -oP '\d+mV')
+status=$(echo "$battery_line" | grep -oP 'BatteryStatus\.\K\w+' | tr '[:upper:]' '[:lower:]')
+
+if (( percent <= 10 )); then
+    class="critical"
+elif (( percent <= 20 )); then
+    class="warning"
+else
+    class="normal"
+fi
+
+echo "{\"text\": \"󰍽 ${percent}%\", \"tooltip\": \"G703 LIGHTSPEED\\n${percent}% ${voltage} ${status}\", \"class\": \"${class}\"}"

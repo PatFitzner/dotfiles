@@ -10,3 +10,5 @@
 [user]
 	name = Pat Fitzner
 	email = 168721415+PatFitzner@users.noreply.github.com
+[url "git@github.com:"]
+	insteadOf = https://github.com/

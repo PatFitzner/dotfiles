@@ -1,3 +1,12 @@
+# OPENSPEC:START
+# OpenSpec shell completions configuration
+if [ -d "/home/pat/.local/share/bash-completion/completions" ]; then
+  for f in "/home/pat/.local/share/bash-completion/completions"/*; do
+    [ -f "$f" ] && . "$f"
+  done
+fi
+# OPENSPEC:END
+
 # If not running interactively, don't do anything (leave this at the top of this file)
 [[ $- != *i* ]] && return
 
@@ -44,5 +53,7 @@ export PATH="$PATH:/home/pat/.local/bin"
 eval "$(register-python-argcomplete pipx)"
 
 
-. "$HOME/.local/share/../bin/env"
-export PATH="$HOME/.npm-global/bin:$PATH"
+. "$HOME/.cargo/env"
+
+eval "$(thefuck --alias)"
+alias ccc="claude --dangerously-skip-permissions"

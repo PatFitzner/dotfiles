@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+import sys
+import yaml
+import subprocess
+import os
+
+def tmux_has_session(name):
+    result = subprocess.run(['tmux', 'has-session', '-t', name], capture_output=True)
+    return result.returncode == 0
+
+def send_keys(window, pane, *cmds):
+    target = f'{window}' if pane == 0 else f'{window}.{pane}'
+    for cmd in cmds:
+        subprocess.run(['tmux', 'send-keys', '-t', target, cmd, 'C-m'])
+
+def main():
+    session_name = 'main'
+    config_path = os.path.expanduser('~/.config/tmux/session.yaml')
+
+    if tmux_has_session(session_name):
+        subprocess.run(['tmux', 'attach-session', '-t', session_name])
+        return
+
+    if not os.path.exists(config_path):
+        print(f'Config not found: {config_path}')
+        sys.exit(1)
+
+    with open(config_path) as f:
+        config = yaml.safe_load(f)
+
+    subprocess.run(['tmux', 'new-session', '-d', '-s', session_name])
+
+    windows = config.get('windows', [])
+    for i, win in enumerate(windows):
+        if i > 0:
+            subprocess.run(['tmux', 'new-window', '-t', session_name, '-n', win.get('name', f'window-{i}')])
+
+        win_name = win.get('name', f'window-{i}')
+        setup = win.get('setup', '')
+        panes = win.get('panes', [])
+        
+        for j, pane in enumerate(panes):
+            cmd = pane if isinstance(pane, str) else pane.get('cmd', '')
+            before = pane.get('before', '') if isinstance(pane, dict) else ''
+            
+            if j > 0:
+                subprocess.run(['tmux', 'split-window', '-t', session_name, '-h', '-b'])
+
+            if setup:
+                send_keys(win_name, j, setup)
+            if before:
+                send_keys(win_name, j, before)
+            if cmd:
+                send_keys(win_name, j, cmd)
+        
+        layout = win.get('layout', 'even-horizontal')
+        subprocess.run(['tmux', 'select-layout', '-t', session_name, layout])
+
+    subprocess.run(['tmux', 'attach-session', '-t', session_name])
+
+if __name__ == '__main__':
+    main()
