@@ -1,0 +1,9 @@
+# Extra env variables
+# env = MY_GLOBAL_ENV,setting
+env = PATH,$HOME/my_scripts:$PATH
+{{- $host := index .hosts .chezmoi.hostname }}
+{{- if eq $host.gpu "nvidia" }}
+env = NVD_BACKEND,direct
+env = LIBVA_DRIVER_NAME,nvidia
+env = __GLX_VENDOR_LIBRARY_NAME,nvidia
+{{- end }}
