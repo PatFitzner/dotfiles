@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Runs when any managed user-systemd unit changes.
+# Hash marker forces re-render when the enable list changes:
+# enable-sha: {{ (index .hosts .chezmoi.hostname).systemd_user_enable | toYaml | sha256sum }}
+set -euo pipefail
+
+systemctl --user daemon-reload
+
+{{ range (index .hosts .chezmoi.hostname).systemd_user_enable -}}
+systemctl --user enable --now {{ . | quote }}
+{{ end -}}
