@@ -1,0 +1,20 @@
+# Host-specific facts consumed by *.tmpl files.
+# Add a new host = add a key under `hosts:` whose name matches `hostname`.
+# Unknown hosts cause templates to error loudly (intentional — no silent defaults).
+
+hosts:
+  omarchy:
+    gpu: nvidia
+    monitors: []         # filled in Task 14
+    packages_extra: []   # filled in Task 14
+    autostart: []        # filled in Task 14
+    systemd_user_enable: []
+
+  pat-ws:
+    gpu: none
+    monitors: []
+    packages_extra: []
+    autostart: []
+    systemd_user_enable: []
+
+packages_common: []      # filled in Task 14
