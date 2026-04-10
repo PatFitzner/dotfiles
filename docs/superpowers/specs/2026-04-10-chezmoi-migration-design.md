@@ -15,7 +15,7 @@ Consolidate to a single `main` branch managed by [chezmoi](https://chezmoi.io). 
 ## Non-goals
 
 - Encrypted secret management via chezmoi. The existing `vault` file is already encrypted externally and is shipped as a plain static file. Secret management can be added later with age or gpg if needed.
-- Full home-manager / Nix-style declarative system state. Only dotfiles and pacman package lists are in scope. Systemd units, kernel modules, bootloader, etc. remain managed outside this repo.
+- Full home-manager / Nix-style declarative **system** state. System-level systemd units (in `/etc/systemd/system/`), `/etc/` files, sysctls, modprobe configs, kernel modules, bootloader, initramfs, partitioning, and display managers remain managed outside this repo. User-level systemd units (`~/.config/systemd/user/`) **are** in scope — they're dotfiles.
 - Runtime omarchy theme state (`~/.config/omarchy/current/`). This directory is written to on the fly by omarchy's theme switcher and is explicitly excluded.
 
 ## What differs per host, and how it's represented
@@ -30,6 +30,7 @@ Consolidate to a single `main` branch managed by [chezmoi](https://chezmoi.io). 
 | Installed pacman packages | Hybrid (common + extras) | `packages_common` + per-host `packages_extra` in `.chezmoidata.yaml`, installed by `run_onchange_` script |
 | Scripts (my_scripts, tmux helpers) | No | Static, relocated to `dot_local/bin/` |
 | Shell (`.bashrc`, `.zshenv`) | Hybrid | Templates with host-conditional blocks |
+| User systemd units (`~/.config/systemd/user/*.service`, `*.timer`) | Hybrid | Static or `.tmpl`; activated by a `run_onchange_after_` script |
 | `vault` (encrypted) | No | Static, shipped as-is |
 | `omarchy/current/` runtime state | N/A | Excluded from chezmoi source and git |
 
@@ -61,6 +62,7 @@ hosts:
       # (to be filled from current main branch during migration)
     autostart:
       # host-specific .desktop basenames
+    systemd_user_enable: []   # user unit names to enable --now
 
   pat-ws:
     gpu: none
@@ -69,6 +71,7 @@ hosts:
       - { port: DP-1,  mode: "1920x1080@60.00", position: "0x0",    scale: 1.00 }
     packages_extra: []   # filled during migration
     autostart: []
+    systemd_user_enable: []
 
 packages_common:
   # shared pacman list, derived from the current pacman_installed_packages.txt
@@ -84,7 +87,7 @@ packages_common:
 
 ### Starter field set (YAGNI)
 
-Begin with exactly: `gpu`, `monitors`, `packages_extra`, `autostart`. Add fields (`features`, `role`, etc.) only when a concrete case requires them.
+Begin with exactly: `gpu`, `monitors`, `packages_extra`, `autostart`, `systemd_user_enable`. Add fields (`features`, `role`, etc.) only when a concrete case requires them.
 
 ## Repo layout
 
@@ -117,6 +120,8 @@ omarchy_dotfiles/                          # repo root; chezmoi source dir
 │   ├── autostart/
 │   │   ├── org.keepassxc.KeePassXC.desktop
 │   │   └── (other .desktop files, excluded per-host via .chezmoiignore.tmpl)
+│   ├── systemd/user/
+│   │   ├── (e.g. foo.service, foo.timer)  # static or .tmpl; per-host via .chezmoiignore.tmpl
 │   └── strawberry/strawberry.conf         # static
 │
 ├── dot_local/bin/
@@ -133,6 +138,7 @@ omarchy_dotfiles/                          # repo root; chezmoi source dir
 ├── dot_vault                              # pre-encrypted, static
 │
 ├── run_onchange_before_10-install-packages.sh.tmpl
+├── run_onchange_after_50-reload-systemd-user.sh.tmpl
 │
 ├── docs/                                  # NOT deployed; excluded via .chezmoiignore
 │   └── superpowers/specs/
@@ -185,6 +191,20 @@ sudo pacman -S --needed --noconfirm \
   {{ range .packages_common }}{{ . }} {{ end }} \
   {{ range (index .hosts .chezmoi.hostname).packages_extra }}{{ . }} {{ end }}
 ```
+
+**`run_onchange_after_50-reload-systemd-user.sh.tmpl`** — runs only when user systemd units change. Reloads the user daemon and enables any units that should be enabled on this host:
+
+```bash
+#!/usr/bin/env bash
+# Re-runs when any managed user unit changes.
+set -euo pipefail
+systemctl --user daemon-reload
+{{ range (index .hosts .chezmoi.hostname).systemd_user_enable -}}
+systemctl --user enable --now {{ . }}
+{{ end -}}
+```
+
+The list of units to enable lives in `.chezmoidata.yaml` under each host as `systemd_user_enable: []`. Keep the list small — units authored as "enabled by default" only.
 
 **`.chezmoiignore.tmpl`** — excludes autostart entries that don't belong on the current host:
 
