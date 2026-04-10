@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# chezmoi re-runs this whenever its rendered content changes.
+# Hash markers below force re-render when the data sources change:
+# common-sha: {{ .packages_common | toYaml | sha256sum }}
+# extras-sha: {{ (index .hosts .chezmoi.hostname).packages_extra | toYaml | sha256sum }}
+set -euo pipefail
+
+PACKAGES=(
+{{- range .packages_common }}
+  {{ . | quote }}
+{{- end }}
+{{- range (index .hosts .chezmoi.hostname).packages_extra }}
+  {{ . | quote }}
+{{- end }}
+)
+
+if [ "${#PACKAGES[@]}" -gt 0 ]; then
+  sudo pacman -S --needed --noconfirm "${PACKAGES[@]}"
+fi
