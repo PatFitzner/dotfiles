@@ -1,6 +1,4 @@
-# Learn how to configure Hyprland: https://wiki.hyprland.org/Configuring/
-
-# Use defaults Omarchy defaults (but don't edit these directly!)
+# Use Omarchy defaults
 source = ~/.local/share/omarchy/default/hypr/autostart.conf
 source = ~/.local/share/omarchy/default/hypr/bindings/media.conf
 source = ~/.local/share/omarchy/default/hypr/bindings/tiling.conf
@@ -11,7 +9,7 @@ source = ~/.local/share/omarchy/default/hypr/input.conf
 source = ~/.local/share/omarchy/default/hypr/windows.conf
 source = ~/.config/omarchy/current/theme/hyprland.conf
 
-# Change your own setup in these files (and overwrite any settings from defaults!)
+# User configs
 source = ~/.config/hypr/monitors.conf
 source = ~/.config/hypr/input.conf
 source = ~/.config/hypr/bindings.conf
@@ -19,38 +17,31 @@ source = ~/.config/hypr/envs.conf
 source = ~/.config/hypr/looknfeel.conf
 source = ~/.config/hypr/autostart.conf
 
-# NVIDIA environment variables
-env = NVD_BACKEND,direct
-env = LIBVA_DRIVER_NAME,nvidia
-env = __GLX_VENDOR_LIBRARY_NAME,nvidia
+{{- $host := index .hosts .chezmoi.hostname }}
 
+{{- if eq $host.gpu "nvidia" }}
 general {
     allow_tearing = true
 }
 
+misc {
+    mouse_move_enables_dpms = true
+    key_press_enables_dpms = true
+}
+{{- end }}
+
+# Shared window rules
 windowrule {
-  name = windowrule-1
+  name = windowrule-cs2
   immediate = on
   match:class = ^(cs2)$
 }
 
 windowrule {
-  name = windowrule-2
-  fullscreen_state = 0 2
-  match:class = (chrome-youtube.com__-Default)
-}
-
-# Chrome pseudo fullscreen - stays in pane instead of expanding to full screen
-windowrule {
   name = chrome-pseudo-fullscreen
   fullscreen_state = 0 2
   match:class = ^(chrome|google-chrome|Google-chrome)$
 }
-
-
-
-monitor=eDP-1,1920x1080@60.02,1920x0,1.25
-monitor=DP-1,1920x1080@60.00,0x0,1.00
 
 # Tmux main dropdown terminal
 windowrule {
@@ -74,5 +65,4 @@ windowrule {
   animation = slide top
 }
 
-# Suppress the workspace animation so only the window slide-from-top plays
 animation = specialWorkspace, 1, 1, default, fade
