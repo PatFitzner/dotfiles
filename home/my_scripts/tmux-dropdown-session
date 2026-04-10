@@ -1,0 +1,12 @@
+#!/bin/bash
+
+hide_if_visible() {
+    sleep 0.1
+    if hyprctl monitors -j | jq -e '.[] | select(.specialWorkspace.name == "special:tmux-main")' > /dev/null 2>&1; then
+        hyprctl dispatch togglespecialworkspace tmux-main 2>/dev/null
+    fi
+}
+
+trap hide_if_visible EXIT
+
+tmux-main

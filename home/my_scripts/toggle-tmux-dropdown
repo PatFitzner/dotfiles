@@ -1,0 +1,11 @@
+#!/bin/bash
+
+CLASS="com.omarchy.tmux-main"
+
+if ! hyprctl clients -j | jq -e '.[] | select(.initialClass == "'"$CLASS"'")' > /dev/null 2>&1; then
+    uwsm app -- ghostty --class="$CLASS" -e tmux-dropdown-session &
+    sleep 0.5
+    hyprctl dispatch togglespecialworkspace tmux-main 2>/dev/null
+else
+    hyprctl dispatch togglespecialworkspace tmux-main
+fi

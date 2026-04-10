@@ -1,0 +1,24 @@
+#!/bin/bash
+
+SESSION="main"
+
+if tmux has-session -t "$SESSION" 2>/dev/null; then
+    exec tmux attach-session -t "$SESSION"
+fi
+
+tmux new-session -d -s "$SESSION" -c "$HOME"
+tmux rename-window -t "$SESSION:0" 'home'
+
+tmux new-window -t "$SESSION" -n 'data_master' -c "$HOME/gw_code/data-platform/master"
+
+if [[ -z "$ACTIVE_BRANCH" && -f "$HOME/.active_branch" ]]; then
+    ACTIVE_BRANCH=$(cat "$HOME/.active_branch")
+fi
+
+if [[ -n "$ACTIVE_BRANCH" && -d "$ACTIVE_BRANCH" ]]; then
+    branch_name=$(basename "$ACTIVE_BRANCH")
+    tmux new-window -t "$SESSION" -n "$branch_name" -c "$ACTIVE_BRANCH"
+fi
+
+tmux select-window -t "$SESSION:0"
+exec tmux attach-session -t "$SESSION"

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+DATA_PLATFORM_DIR="$HOME/gw_code/data-platform"
+MASTER_DIR="$DATA_PLATFORM_DIR/master"
+
+# Fetch latest remote state
+cd "$MASTER_DIR" || { notify-send "Error" "Cannot access $MASTER_DIR"; exit 1; }
+git fetch --prune --quiet 2>/dev/null
+
+# List remote branches (strip origin/ prefix) for autocomplete
+remote_branches=$(git branch -r --format='%(refname:short)' | sed 's|^origin/||' | sort)
+
+# Prompt for branch name — remote branches shown as suggestions
+branch=$(echo "$remote_branches" | walker --dmenu --placeholder "Branch name for new worktree")
+
+[[ -z "$branch" ]] && exit 0
+
+# Derive directory name: replace slashes with hyphens
+dir_name="${branch//\//-}"
+worktree_path="$DATA_PLATFORM_DIR/$dir_name"
+
+# If worktree already exists, just open it
+if [[ -d "$worktree_path" ]]; then
+    notify-send "Worktree exists" "Opening $dir_name"
+    code "$worktree_path"
+    exit 0
+fi
+
+# Invoke Claude Code Sonnet to create worktree via skill
+cd "$DATA_PLATFORM_DIR" || exit 1
+if claude -p \
+    "Use /worktree-generator. Branch: '$branch', directory: '$dir_name'. Proceed without asking questions." \
+    --model sonnet; then
+    notify-send "Worktree created" "$dir_name"
+    code "$worktree_path"
+else
+    notify-send "Worktree failed" "Could not create $dir_name"
+    exit 1
+fi

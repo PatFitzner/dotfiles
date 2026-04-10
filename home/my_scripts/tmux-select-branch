@@ -1,0 +1,21 @@
+#!/bin/bash
+
+DATA_PLATFORM_DIR="$HOME/gw_code/data-platform"
+
+dirs=$(find "$DATA_PLATFORM_DIR" -maxdepth 1 -mindepth 1 -type d -printf '%f\n' | sort)
+
+if [[ -z "$dirs" ]]; then
+    notify-send "No directories found" "$DATA_PLATFORM_DIR"
+    exit 1
+fi
+
+selected=$(echo "$dirs" | walker --dmenu --placeholder "Select active branch")
+
+if [[ -n "$selected" ]]; then
+    full_path="$DATA_PLATFORM_DIR/$selected"
+    echo "$full_path" > "$HOME/.active_branch"
+    sed -i '/^export ACTIVE_BRANCH=/d' "$HOME/.bashrc"
+    echo "export ACTIVE_BRANCH=\"$full_path\"" >> "$HOME/.bashrc"
+    export ACTIVE_BRANCH="$full_path"
+    notify-send "ACTIVE_BRANCH set" "$selected"
+fi
