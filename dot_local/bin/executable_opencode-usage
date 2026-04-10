@@ -1,0 +1,240 @@
+#!/usr/bin/env python3
+"""OpenCode Go subscription usage monitor for Waybar.
+
+Fetches usage data from the OpenCode billing page using browser cookies.
+Displays rolling, weekly, and monthly usage percentages.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+import time
+from pathlib import Path
+
+import browser_cookie3
+from curl_cffi import requests
+
+# ==================== Configuration ====================
+
+OPENCODE_DOMAIN = "opencode.ai"
+FIREFOX_COOKIE_FILE = Path.home() / ".config/mozilla/firefox/tgahoqgl.default-release/cookies.sqlite"
+WORKSPACE_ID = "wrk_01KK4N3ACDFWSNYVQ2KW88PZQ8"
+BILLING_URL = f"https://opencode.ai/workspace/{WORKSPACE_ID}/billing"
+
+CACHE_DIR = Path.home() / ".cache" / "waybar-ai-usage"
+CACHE_FILE = CACHE_DIR / "opencode-go.json"
+CACHE_TTL = 120  # seconds
+
+
+# ==================== Cookie Loading ====================
+
+
+def load_cookies() -> dict:
+    """Load opencode.ai cookies from Firefox."""
+    cj = browser_cookie3.firefox(
+        cookie_file=str(FIREFOX_COOKIE_FILE),
+        domain_name=OPENCODE_DOMAIN,
+    )
+    cookies = {c.name: c.value for c in cj}
+    if not cookies:
+        raise RuntimeError("No cookies found for opencode.ai in Firefox")
+    return cookies
+
+
+# ==================== Data Fetching ====================
+
+
+def parse_usage_from_html(html: str) -> dict:
+    """Parse lite subscription usage data from the billing page HTML."""
+    # Match the lite.subscription.get data block which contains usage info
+    # Pattern: rollingUsage:{status:"ok",resetInSec:N,usagePercent:N}
+    result = {}
+
+    for window in ("rollingUsage", "weeklyUsage", "monthlyUsage"):
+        m = re.search(
+            rf'{window}:\$R\[\d+\]=\{{status:"(\w+)",resetInSec:(\d+),usagePercent:(\d+)\}}',
+            html,
+        )
+        if m:
+            result[window] = {
+                "status": m.group(1),
+                "reset_in_sec": int(m.group(2)),
+                "usage_percent": int(m.group(3)),
+            }
+
+    if not result:
+        raise RuntimeError("Could not parse usage data from billing page")
+
+    return result
+
+
+def fetch_usage_uncached() -> dict:
+    """Fetch usage data from the billing page."""
+    cookies = load_cookies()
+
+    resp = requests.get(
+        BILLING_URL,
+        cookies=cookies,
+        headers={
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        },
+        impersonate="chrome",
+        timeout=15,
+        allow_redirects=True,
+    )
+
+    if resp.status_code in (401, 403):
+        raise RuntimeError("Auth error — log into opencode.ai in Firefox and retry")
+
+    resp.raise_for_status()
+    return parse_usage_from_html(resp.text)
+
+
+def fetch_usage() -> dict:
+    """Fetch usage with file-based caching."""
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+    if CACHE_FILE.exists():
+        age = time.time() - CACHE_FILE.stat().st_mtime
+        if age < CACHE_TTL:
+            try:
+                return json.loads(CACHE_FILE.read_text())
+            except Exception:
+                pass
+
+    data = fetch_usage_uncached()
+    CACHE_FILE.write_text(json.dumps(data))
+    return data
+
+
+# ==================== Formatting ====================
+
+
+def format_reset(seconds: int) -> str:
+    """Format seconds until reset as human-readable string."""
+    if seconds <= 0:
+        return "now"
+    if seconds >= 86400:
+        d = seconds // 86400
+        h = (seconds % 86400) // 3600
+        return f"{d}d{h:02}h"
+    if seconds >= 3600:
+        h = seconds // 3600
+        m = (seconds % 3600) // 60
+        return f"{h}h{m:02}m"
+    m = seconds // 60
+    s = seconds % 60
+    return f"{m}m{s:02}s"
+
+
+def usage_color(pct: int) -> str:
+    """Return color hex for usage percentage."""
+    if pct >= 80:
+        return "#f38ba8"  # red
+    if pct >= 50:
+        return "#f9e2af"  # yellow
+    return "#a6e3a1"  # green
+
+
+def usage_class(pct: int) -> str:
+    """Return CSS class for usage percentage."""
+    if pct >= 80:
+        return "oc-high"
+    if pct >= 50:
+        return "oc-mid"
+    return "oc-low"
+
+
+def print_waybar(data: dict) -> None:
+    """Output JSON for Waybar custom module."""
+    rolling = data.get("rollingUsage", {})
+    weekly = data.get("weeklyUsage", {})
+    monthly = data.get("monthlyUsage", {})
+
+    r_pct = rolling.get("usage_percent", 0)
+    w_pct = weekly.get("usage_percent", 0)
+    m_pct = monthly.get("usage_percent", 0)
+
+    active_pct = max(r_pct, w_pct, m_pct)
+
+    r_reset = format_reset(rolling.get("reset_in_sec", 0))
+    w_reset = format_reset(weekly.get("reset_in_sec", 0))
+    m_reset = format_reset(monthly.get("reset_in_sec", 0))
+
+    cls = usage_class(active_pct)
+
+    # Show all three windows: R/W/M with color per value
+    r_col = usage_color(r_pct)
+    w_col = usage_color(w_pct)
+    m_col = usage_color(m_pct)
+    text = (
+        f"🧠 "
+        f"<span foreground='{r_col}'>{r_pct}%</span>"
+        f" - <span foreground='{w_col}'>{w_pct}%</span>"
+        f" - <span foreground='{m_col}'>{m_pct}%</span>"
+    )
+
+    tooltip = (
+        f"OpenCode Go Usage\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"Rolling:  {r_pct}%  ⏱ {r_reset}\n"
+        f"Weekly:   {w_pct}%  ⏱ {w_reset}\n"
+        f"Monthly:  {m_pct}%  ⏱ {m_reset}\n"
+        f"\n"
+        f"Click to refresh"
+    )
+
+    print(json.dumps({
+        "text": text,
+        "tooltip": tooltip,
+        "class": cls,
+        "alt": f"{active_pct}%",
+    }))
+
+
+def print_cli(data: dict) -> None:
+    """Print usage to terminal."""
+    for window in ("rollingUsage", "weeklyUsage", "monthlyUsage"):
+        d = data.get(window, {})
+        label = window.replace("Usage", "")
+        pct = d.get("usage_percent", 0)
+        reset = format_reset(d.get("reset_in_sec", 0))
+        print(f"  {label:>8}: {pct}% (resets in {reset})")
+
+
+# ==================== Entry Point ====================
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="OpenCode Go usage for Waybar")
+    parser.add_argument("--waybar", action="store_true", help="Output JSON for Waybar")
+    args = parser.parse_args()
+
+    try:
+        data = fetch_usage()
+    except Exception as e:
+        if args.waybar:
+            err = str(e)
+            short = "Auth Err" if ("auth" in err.lower() or "403" in err or "401" in err) else "Err"
+            print(json.dumps({
+                "text": f"<span foreground='#ff5555'>OC {short}</span>",
+                "tooltip": f"Error: {err}\n\nMake sure you're logged into opencode.ai in Firefox",
+                "class": "critical",
+            }))
+            sys.exit(0)
+        else:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    if args.waybar:
+        print_waybar(data)
+    else:
+        print(f"OpenCode Go Usage:")
+        print_cli(data)
+
+
+if __name__ == "__main__":
+    main()

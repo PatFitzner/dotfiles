@@ -58,9 +58,18 @@ window#waybar {
 #pulseaudio,
 #custom-omarchy,
 #custom-screenrecording-indicator,
-#custom-update {
+#custom-update,
+#custom-mouse-battery {
   min-width: 12px;
   margin: 0 7.5px;
+}
+
+#custom-mouse-battery.warning {
+  color: #f9e2af;
+}
+
+#custom-mouse-battery.critical {
+  color: #f38ba8;
 }
 
 #tray {
@@ -160,6 +169,39 @@ tooltip {
 
 #custom-claude-usage.claude-high {
   color: #f38ba8;  /* Red: high usage (80-99%) */
+}
+
+/* OpenCode Go Usage Monitor Styling */
+#custom-opencode-usage {
+  padding: 0 8px;
+  margin: 0 4px;
+  border-radius: 4px;
+  background: transparent;
+  font-family: 'Adwaita Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+#custom-opencode-usage:hover {
+  background: rgba(222, 115, 86, 0.15);
+}
+
+#custom-opencode-usage.oc-low {
+  color: #a6e3a1;  /* Green: low usage (0-49%) */
+}
+
+#custom-opencode-usage.oc-mid {
+  color: #f9e2af;  /* Yellow: medium usage (50-79%) */
+}
+
+#custom-opencode-usage.oc-high {
+  color: #f38ba8;  /* Red: high usage (80-99%) */
+}
+
+#custom-opencode-usage.critical {
+  color: #ff5555;
+  background: rgba(255, 85, 85, 0.1);
 }
 
 /* OpenAI Codex CLI Usage Monitor Styling */
