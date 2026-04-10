@@ -7,6 +7,9 @@ if [ -d "/home/pat/.local/share/bash-completion/completions" ]; then
 fi
 # OPENSPEC:END
 
+alias ce='chezmoi edit --apply'
+alias ca='chezmoi apply'
+
 # If not running interactively, don't do anything (leave this at the top of this file)
 [[ $- != *i* ]] && return
 
@@ -45,7 +48,6 @@ fzg() {
         --bind "enter:execute(echo {1}:{2} | xargs -o \$EDITOR)"
 }
 export DATABASE_PASSWORD="pat"
-export PATH="/home/pat/my_scripts:$PATH"
 
 # Created by `pipx` on 2026-01-02 23:58:04
 export PATH="$PATH:/home/pat/.local/bin"
@@ -74,3 +76,13 @@ alias ccc="claude --dangerously-skip-permissions"
 export PATH="$HOME/.cargo/bin:$PATH"
 
 export ACTIVE_BRANCH=""
+
+{{- $host := index .hosts .chezmoi.hostname }}
+
+{{- if eq .chezmoi.hostname "omarchy" }}
+# omarchy-specific bash tweaks
+{{- end }}
+
+{{- if eq .chezmoi.hostname "pat-ws" }}
+# pat-ws-specific bash tweaks
+{{- end }}

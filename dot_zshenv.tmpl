@@ -1,0 +1,9 @@
+{{- $host := index .hosts .chezmoi.hostname }}
+
+{{- if eq .chezmoi.hostname "omarchy" }}
+# omarchy-specific zsh env tweaks
+{{- end }}
+
+{{- if eq .chezmoi.hostname "pat-ws" }}
+# pat-ws-specific zsh env tweaks
+{{- end }}
