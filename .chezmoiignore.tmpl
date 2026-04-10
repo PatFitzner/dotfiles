@@ -1,0 +1,11 @@
+# Files listed here are NOT deployed. Use to exclude host-specific files.
+# This is the per-host (template) ignore file; .chezmoiignore (static) exists
+# alongside it for unconditional entries (docs, README, .git).
+
+{{- if ne .chezmoi.hostname "pat-ws" }}
+# pat-ws-only files (excluded on every other host) would go here.
+{{- end }}
+
+{{- if ne .chezmoi.hostname "omarchy" }}
+# omarchy-only files (excluded on every other host) would go here.
+{{- end }}
