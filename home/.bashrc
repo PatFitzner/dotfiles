@@ -1,3 +1,12 @@
+# OPENSPEC:START
+# OpenSpec shell completions configuration
+if [ -d "/home/pat/.local/share/bash-completion/completions" ]; then
+  for f in "/home/pat/.local/share/bash-completion/completions"/*; do
+    [ -f "$f" ] && . "$f"
+  done
+fi
+# OPENSPEC:END
+
 # If not running interactively, don't do anything (leave this at the top of this file)
 [[ $- != *i* ]] && return
 
@@ -43,5 +52,25 @@ export PATH="$PATH:/home/pat/.local/bin"
 
 eval "$(register-python-argcomplete pipx)"
 
+export PATH="$HOME/google-cloud-sdk/bin:$PATH"
 
-. "$HOME/.local/share/../bin/env"
+# . "$HOME/.local/share/../bin/env"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/pat/google-cloud-sdk/path.bash.inc' ]; then . '/home/pat/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/pat/google-cloud-sdk/completion.bash.inc' ]; then . '/home/pat/google-cloud-sdk/completion.bash.inc'; fi
+
+# OpenClaw Completion
+source "/home/pat/.openclaw/completions/openclaw.bash"
+
+eval "$(thefuck --alias)"
+
+# Source secrets from .env (not tracked by git)
+[ -f "$HOME/.env" ] && source "$HOME/.env"
+export OPENSPEC_TELEMETRY=0
+alias ccc="claude --dangerously-skip-permissions"
+export PATH="$HOME/.cargo/bin:$PATH"
+
+export ACTIVE_BRANCH=""
