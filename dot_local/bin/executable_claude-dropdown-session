@@ -1,0 +1,15 @@
+#!/bin/bash
+# Session command launched inside the claude dropdown's ghostty window.
+# The trap hides the special workspace automatically when claude exits,
+# matching the tmux-dropdown-session pattern.
+
+hide_if_visible() {
+    sleep 0.1
+    if hyprctl monitors -j | jq -e '.[] | select(.specialWorkspace.name == "special:claude")' > /dev/null 2>&1; then
+        hyprctl dispatch togglespecialworkspace claude 2>/dev/null
+    fi
+}
+
+trap hide_if_visible EXIT
+
+claude --dangerously-skip-permissions

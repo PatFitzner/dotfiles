@@ -70,6 +70,7 @@ hosts:
       - xpadneo-dkms
     autostart: []
     systemd_user_enable: []
+    tmux_main_windows: []
 
   pat-ws:
     gpu: none
@@ -80,7 +81,6 @@ hosts:
       - baobab
       - clementine
       - gemini-cli
-      - ghostty
       - google-cloud-cli-gsutil
       - goose-desktop
       - gst-libav
@@ -94,12 +94,13 @@ hosts:
       - zettlr
     autostart: []
     systemd_user_enable: []
+    tmux_main_windows:
+      - { name: data_master, path: "$HOME/gw_code/data-platform/master" }
 
 packages_common:
   - 1password-beta
   - 1password-cli
   - aether
-  - alacritty
   - asdcontrol
   - audacity
   - base
@@ -161,6 +162,7 @@ packages_common:
   - fzf
   - game-devices-udev
   - gamescope
+  - ghostty
   - gimp
   - git
   - github-cli

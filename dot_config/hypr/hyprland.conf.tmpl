@@ -65,4 +65,16 @@ windowrule {
   animation = slide top
 }
 
+# KeePassXC dropdown (SUPER+P)
+windowrule {
+  name = keepassxc-dropdown
+  match:class = ^(org\.keepassxc\.KeePassXC)$
+  float = on
+  size = 60% 55%
+  center = on
+  animation = slide
+}
+
+workspace = special:keepassxc, on-created-empty:uwsm app -- keepassxc
+
 animation = specialWorkspace, 1, 1, default, fade
