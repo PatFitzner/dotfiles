@@ -1,6 +1,6 @@
 # Extra env variables
 # env = MY_GLOBAL_ENV,setting
-env = PATH,$HOME/my_scripts:$PATH
+# (~/.local/bin is already in PATH via Omarchy defaults; scripts live there.)
 {{- $host := index .hosts .chezmoi.hostname }}
 {{- if eq $host.gpu "nvidia" }}
 env = NVD_BACKEND,direct

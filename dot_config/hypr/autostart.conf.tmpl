@@ -1,3 +1,6 @@
 # Extra autostart processes
 # exec-once = uwsm app -- my-service
+{{- if eq .chezmoi.hostname "omarchy" }}
 exec-once = brightnessctl --device='asus::kbd_backlight' set 3
+exec-once = ~/.config/hypr/scripts/monitor-hotplug.sh
+{{- end }}

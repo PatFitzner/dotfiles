@@ -3,9 +3,11 @@
 # alongside it for unconditional entries (docs, README, .git).
 
 {{- if ne .chezmoi.hostname "pat-ws" }}
-# pat-ws-only files (excluded on every other host) would go here.
+# pat-ws-only files (excluded on every other host):
+.config/autostart/org.keepassxc.KeePassXC.desktop
 {{- end }}
 
 {{- if ne .chezmoi.hostname "omarchy" }}
-# omarchy-only files (excluded on every other host) would go here.
+# omarchy-only files (excluded on every other host):
+.config/autostart/remmina-applet.desktop
 {{- end }}

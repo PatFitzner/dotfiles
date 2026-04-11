@@ -2,3 +2,6 @@ README.md
 docs
 .git
 .gitignore
+
+# Runtime output from pacman_installed_dump.sh — not tracked.
+.local/bin/pacman_installed_packages.txt

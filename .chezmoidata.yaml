@@ -5,10 +5,12 @@
 hosts:
   omarchy:
     gpu: nvidia
+    # Internal panel on this ASUS is eDP-2 (not eDP-1). External is HDMI-A-1.
+    # Catch-all (empty port) covers any other monitor attached later.
     monitors:
-      - { port: eDP-1, mode: "2560x1600@240",    position: "auto",  scale: 1.25 }
-      - { port: DP-1,  mode: "2560x1440@120.00", position: "1600x0", scale: 1.00 }
-      - { port: eDP-2, mode: "2560x1600@240.00", position: "0x416", scale: 1.60 }
+      - { port: eDP-2,    mode: "2560x1600@240", position: "auto",   scale: 1.25 }
+      - { port: HDMI-A-1, mode: "2560x1440@240", position: "1600x0", scale: 1.00 }
+      - { port: "",       mode: "preferred",     position: "auto",   scale: 1.00 }
     packages_extra:
       - alsa-utils
       - ansible
@@ -56,6 +58,7 @@ hosts:
       - realtime-privileges
       - remmina
       - rpi-imager
+      - solaar
       - stomptuner
       - supergfxctl
       - terraform
@@ -127,7 +130,6 @@ packages_common:
   - docker-buildx
   - docker-compose
   - dotnet-runtime-9.0
-  - Dump at Sun Jan 25 10:57:31 AM CET 2026
   - dust
   - efibootmgr
   - egl-wayland
@@ -309,7 +311,6 @@ packages_common:
   - tmux
   - tobi-try
   - todoist-appimage
-  - transmission-gtk3
   - tree-sitter-cli
   - ttf-cascadia-mono-nerd
   - ttf-ia-writer

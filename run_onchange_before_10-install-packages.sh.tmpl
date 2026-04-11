@@ -15,5 +15,7 @@ PACKAGES=(
 )
 
 if [ "${#PACKAGES[@]}" -gt 0 ]; then
-  sudo pacman -S --needed --noconfirm "${PACKAGES[@]}"
+  # yay handles both sync repos and AUR (many entries in these lists are AUR).
+  # yay escalates to sudo itself; do not prefix.
+  yay -S --needed --noconfirm "${PACKAGES[@]}"
 fi
