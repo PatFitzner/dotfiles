@@ -1,6 +1,15 @@
 # Host-specific facts consumed by *.tmpl files.
 # Add a new host = add a key under `hosts:` whose name matches `hostname`.
-# Unknown hosts cause templates to error loudly (intentional — no silent defaults).
+# Unknown hosts get the values from `defaults:` below.
+
+defaults:
+  gpu: none
+  monitors:
+    - { port: "", mode: "preferred", position: "auto", scale: 1.00 }
+  packages_extra: []
+  autostart: []
+  systemd_user_enable: []
+  tmux_main_windows: []
 
 hosts:
   omarchy:

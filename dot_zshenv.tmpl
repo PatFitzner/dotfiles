@@ -1,4 +1,6 @@
-{{- $host := index .hosts .chezmoi.hostname }}
+{{- $host := dict -}}
+{{- if hasKey .hosts .chezmoi.hostname }}{{ $host = index .hosts .chezmoi.hostname }}{{ end -}}
+{{- $host = merge $host .defaults -}}
 
 {{- if eq .chezmoi.hostname "omarchy" }}
 # omarchy-specific zsh env tweaks

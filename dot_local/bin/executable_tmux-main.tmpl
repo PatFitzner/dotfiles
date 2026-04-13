@@ -11,11 +11,15 @@ fi
 tmux new-session -d -s "$SESSION" -c "$HOME"
 tmux rename-window -t "$SESSION:0" 'home'
 
-{{ range (index .hosts .chezmoi.hostname).tmux_main_windows -}}
+{{- $host := dict -}}
+{{- if hasKey .hosts .chezmoi.hostname }}{{ $host = index .hosts .chezmoi.hostname }}{{ end -}}
+{{- $host = merge $host .defaults }}
+
+{{ range $host.tmux_main_windows -}}
 if [[ -d "{{ .path }}" ]]; then
     tmux new-window -t "$SESSION" -n '{{ .name }}' -c "{{ .path }}"
 fi
-{{ end }}
+{{ end -}}
 if [[ -z "$ACTIVE_BRANCH" && -f "$HOME/.active_branch" ]]; then
     ACTIVE_BRANCH=$(cat "$HOME/.active_branch")
 fi

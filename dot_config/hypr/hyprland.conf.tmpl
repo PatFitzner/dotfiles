@@ -17,7 +17,9 @@ source = ~/.config/hypr/envs.conf
 source = ~/.config/hypr/looknfeel.conf
 source = ~/.config/hypr/autostart.conf
 
-{{- $host := index .hosts .chezmoi.hostname }}
+{{- $host := dict -}}
+{{- if hasKey .hosts .chezmoi.hostname }}{{ $host = index .hosts .chezmoi.hostname }}{{ end -}}
+{{- $host = merge $host .defaults -}}
 
 {{- if eq $host.gpu "nvidia" }}
 general {

@@ -4,7 +4,9 @@
 # (e.g. toggle-claude-dropdown) resolve. bashrc adds it for interactive shells
 # but Hyprland inherits PATH from the session manager, which does not.
 env = PATH,$HOME/.local/bin:$PATH
-{{- $host := index .hosts .chezmoi.hostname }}
+{{- $host := dict -}}
+{{- if hasKey .hosts .chezmoi.hostname }}{{ $host = index .hosts .chezmoi.hostname }}{{ end -}}
+{{- $host = merge $host .defaults -}}
 {{- if eq $host.gpu "nvidia" }}
 env = NVD_BACKEND,direct
 env = LIBVA_DRIVER_NAME,nvidia
