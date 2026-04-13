@@ -21,6 +21,7 @@ hosts:
       - { port: HDMI-A-1, mode: "2560x1440@240", position: "1600x0", scale: 1.00 }
       - { port: "",       mode: "preferred",     position: "auto",   scale: 1.00 }
     packages_extra:
+      - audacity
       - alsa-utils
       - ansible
       - asusctl
@@ -29,6 +30,7 @@ hosts:
       - aws-cli-v2
       - bun
       - claude-code
+      - strawberry
       - clickhouse
       - cloudflare-warp-bin
       - cpupower
@@ -77,6 +79,11 @@ hosts:
       - vulkan-tools
       - waybar-ai-usage
       - xpadneo-dkms
+      - calibre
+      - caligula-bin
+      - insync
+      - obs-studio
+      - veracrypt
     autostart: []
     systemd_user_enable: []
     tmux_main_windows: []
@@ -88,10 +95,8 @@ hosts:
       - { port: DP-1,  mode: "1920x1080@60.00", position: "0x0",    scale: 1.00 }
     packages_extra:
       - baobab
-      - clementine
       - gemini-cli
       - google-cloud-cli-gsutil
-      - goose-desktop
       - gst-libav
       - gst-plugins-base
       - gst-plugins-ugly
@@ -99,7 +104,6 @@ hosts:
       - gstreamer0.10-base-plugins
       - gstreamer-vaapi
       - otf-opendyslexic-nerd
-      - strawberry
       - zettlr
     autostart: []
     systemd_user_enable: []
@@ -107,11 +111,6 @@ hosts:
       - { name: data_master, path: "$HOME/gw_code/data-platform/master" }
 
 packages_common:
-  - 1password-beta
-  - 1password-cli
-  - aether
-  - asdcontrol
-  - audacity
   - base
   - base-devel
   - bash-completion
@@ -122,12 +121,9 @@ packages_common:
   - blueman
   - bluetui
   - bolt
-  - brave-bin
   - brightnessctl
   - btop
   - btrfs-progs
-  - calibre
-  - caligula-bin
   - chromium
   - clang
   - cups
@@ -142,24 +138,10 @@ packages_common:
   - dust
   - efibootmgr
   - egl-wayland
-  - elephant
-  - elephant-bluetooth
-  - elephant-calc
-  - elephant-clipboard
-  - elephant-desktopapplications
-  - elephant-files
-  - elephant-menus
-  - elephant-providerlist
-  - elephant-runner
-  - elephant-symbols
-  - elephant-todo
-  - elephant-unicode
-  - elephant-websearch
   - evince
   - exfatprogs
   - expac
   - eza
-  - fastfetch
   - fcitx5
   - fcitx5-gtk
   - fcitx5-qt
@@ -194,10 +176,6 @@ packages_common:
   - gvfs-nfs
   - gvfs-smb
   - hide-client
-  - hypridle
-  - hyprland
-  - hyprland-guiutils
-  - hyprland-preview-share-picker
   - hyprlock
   - hyprmon-bin
   - hyprpicker
@@ -208,7 +186,6 @@ packages_common:
   - impala
   - imv
   - inetutils
-  - insync
   - intel-ucode
   - inxi
   - iwd
@@ -258,7 +235,6 @@ packages_common:
   - nvidia-open-dkms
   - nvidia-utils
   - obsidian
-  - obs-studio
   - okular
   - omarchy-keyring
   - omarchy-nvim
@@ -331,15 +307,9 @@ packages_common:
   - unzip
   - usage
   - uwsm
-  - veracrypt
-  - virtualbox
   - visual-studio-code-bin
   - vlc
   - vulkan-intel
-  - walker
-  - waybar
-  - waydroid
-  - waydroid-image-gapps
   - wayfreeze
   - wev
   - wget
