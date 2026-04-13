@@ -36,6 +36,7 @@
     "cpu",
     {{- if eq .chezmoi.hostname "omarchy" }}
     "custom/mouse-battery",
+    "custom/headset-battery",
     {{- end }}
     "battery"
   ],
@@ -279,6 +280,12 @@
     "return-type": "json",
     "interval": 60,
     "on-click": "solaar",
+    "tooltip": true
+  },
+  "custom/headset-battery": {
+    "exec": "~/.local/bin/waybar-headset-battery",
+    "return-type": "json",
+    "interval": 60,
     "tooltip": true
   },
   "custom/opencode-usage": {

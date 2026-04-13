@@ -1,0 +1,59 @@
+#!/bin/bash
+# Waybar module: Audeze Maxwell battery via headsetcontrol
+#
+# headsetcontrol occasionally returns BATTERY_UNAVAILABLE on a single HID read
+# even when the headset is on, so retry a few times before giving up.
+
+read_once() {
+    # Use -b (battery-only) with -o json: querying all capabilities with plain
+    # `-o json` causes the Audeze Maxwell battery read to return UNAVAILABLE.
+    headsetcontrol -b -o json 2>/dev/null
+}
+
+level=-1
+status=""
+device=""
+
+for _ in 1 2 3; do
+    json=$(read_once)
+    [[ -z "$json" ]] && continue
+    device=$(echo "$json" | jq -r '.devices[0].device // empty')
+    status=$(echo "$json" | jq -r '.devices[0].battery.status // empty')
+    level=$(echo "$json" | jq -r '.devices[0].battery.level // -1')
+    [[ "$status" == "BATTERY_AVAILABLE" || "$status" == "BATTERY_CHARGING" ]] && break
+    sleep 0.3
+done
+
+icon="󰋋"
+
+# No dongle at all
+if [[ -z "$device" ]]; then
+    echo "{\"text\": \"${icon}\", \"tooltip\": \"Audeze Maxwell dongle not detected\", \"class\": \"disconnected\"}"
+    exit 0
+fi
+
+# Headset powered off / out of range
+if [[ "$status" != "BATTERY_AVAILABLE" && "$status" != "BATTERY_CHARGING" ]]; then
+    echo "{\"text\": \"${icon}\", \"tooltip\": \"${device}\\nOff or out of range\", \"class\": \"disconnected\"}"
+    exit 0
+fi
+
+if [[ "$status" == "BATTERY_CHARGING" ]]; then
+    echo "{\"text\": \"${icon} \uf0e7\", \"tooltip\": \"${device}\\nCharging\", \"class\": \"charging\"}"
+    exit 0
+fi
+
+if (( level < 0 )); then
+    echo "{\"text\": \"${icon}\", \"tooltip\": \"${device}\\nUnknown level\", \"class\": \"disconnected\"}"
+    exit 0
+fi
+
+if (( level <= 10 )); then
+    class="critical"
+elif (( level <= 20 )); then
+    class="warning"
+else
+    class="normal"
+fi
+
+echo "{\"text\": \"${icon} ${level}%\", \"tooltip\": \"${device}\\n${level}%\", \"class\": \"${class}\"}"

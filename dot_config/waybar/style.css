@@ -59,17 +59,24 @@ window#waybar {
 #custom-omarchy,
 #custom-screenrecording-indicator,
 #custom-update,
-#custom-mouse-battery {
+#custom-mouse-battery,
+#custom-headset-battery {
   min-width: 12px;
   margin: 0 7.5px;
 }
 
-#custom-mouse-battery.warning {
+#custom-mouse-battery.warning,
+#custom-headset-battery.warning {
   color: #f9e2af;
 }
 
-#custom-mouse-battery.critical {
+#custom-mouse-battery.critical,
+#custom-headset-battery.critical {
   color: #f38ba8;
+}
+
+#custom-headset-battery.disconnected {
+  opacity: 0.4;
 }
 
 #tray {
