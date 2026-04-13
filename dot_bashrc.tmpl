@@ -1,7 +1,7 @@
 # OPENSPEC:START
 # OpenSpec shell completions configuration
-if [ -d "/home/pat/.local/share/bash-completion/completions" ]; then
-  for f in "/home/pat/.local/share/bash-completion/completions"/*; do
+if [ -d "{{ .chezmoi.homeDir }}/.local/share/bash-completion/completions" ]; then
+  for f in "{{ .chezmoi.homeDir }}/.local/share/bash-completion/completions"/*; do
     [ -f "$f" ] && . "$f"
   done
 fi
@@ -50,7 +50,7 @@ fzg() {
 export DATABASE_PASSWORD="pat"
 
 # Created by `pipx` on 2026-01-02 23:58:04
-export PATH="$PATH:/home/pat/.local/bin"
+export PATH="$PATH:{{ .chezmoi.homeDir }}/.local/bin"
 
 eval "$(register-python-argcomplete pipx)"
 
@@ -59,13 +59,13 @@ export PATH="$HOME/google-cloud-sdk/bin:$PATH"
 # . "$HOME/.local/share/../bin/env"
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/pat/google-cloud-sdk/path.bash.inc' ]; then . '/home/pat/google-cloud-sdk/path.bash.inc'; fi
+if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.bash.inc' ]; then . '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.bash.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/home/pat/google-cloud-sdk/completion.bash.inc' ]; then . '/home/pat/google-cloud-sdk/completion.bash.inc'; fi
+if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.bash.inc' ]; then . '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.bash.inc'; fi
 
 # OpenClaw Completion
-source "/home/pat/.openclaw/completions/openclaw.bash"
+source "{{ .chezmoi.homeDir }}/.openclaw/completions/openclaw.bash"
 
 eval "$(thefuck --alias)"
 

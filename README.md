@@ -5,8 +5,8 @@ Chezmoi-managed dotfiles for Arch Linux + Hyprland across multiple machines.
 ## Fresh install
 
 ```bash
-# 1. Install chezmoi + apply in one shot
-chezmoi init --apply git@github.com:PatFitzner/omarchy_dotfiles.git
+# 1. Install chezmoi + apply in one shot (even if chezmoi isn't installed yet)
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply PatFitzner/omarchy_dotfiles
 
 # 2. Drop the age decryption key (get it from your vault / backup)
 mkdir -p ~/.config/chezmoi
