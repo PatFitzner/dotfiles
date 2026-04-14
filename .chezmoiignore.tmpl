@@ -10,4 +10,5 @@
 {{- if ne .chezmoi.hostname "omarchy" }}
 # omarchy-only files (excluded on every other host):
 .config/autostart/remmina-applet.desktop
+.ssh/certs/oracle.key
 {{- end }}
