@@ -1,0 +1,37 @@
+{{- $host := dict -}}
+{{- if hasKey .hosts .chezmoi.hostname }}{{ $host = index .hosts .chezmoi.hostname }}{{ end -}}
+{{- $host = merge $host .defaults -}}
+#!/bin/bash
+# Waybar module: Logitech mouse battery via solaar
+
+DEVICE={{ $host.waybar.mouse.device | quote }}
+
+output=$(solaar show "$DEVICE" 2>/dev/null)
+
+if [[ -z "$output" ]]; then
+    echo '{"text": "", "tooltip": "", "class": "disconnected"}'
+    exit 0
+fi
+
+percent=$(echo "$output" | grep -oP 'Battery: \K\d+(?=%)' | head -1)
+voltage=$(echo "$output" | grep -oP '\d+mV' | head -1)
+status=$(echo "$output" | grep -oP 'BatteryStatus\.\K\w+' | head -1 | tr '[:upper:]' '[:lower:]')
+
+if [[ -z "$percent" ]]; then
+    echo '{"text": "", "tooltip": "", "class": "disconnected"}'
+    exit 0
+fi
+
+if (( percent <= 10 )); then
+    class="critical"
+elif (( percent <= 20 )); then
+    class="warning"
+else
+    class="normal"
+fi
+
+tooltip="${DEVICE}\\n${percent}%"
+[[ -n "$voltage" ]] && tooltip="${tooltip} ${voltage}"
+[[ -n "$status" ]] && tooltip="${tooltip} ${status}"
+
+echo "{\"text\": \"󰍽 ${percent}%\", \"tooltip\": \"${tooltip}\", \"class\": \"${class}\"}"

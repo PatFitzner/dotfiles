@@ -1,3 +1,7 @@
+{{- $host := dict -}}
+{{- if hasKey .hosts .chezmoi.hostname }}{{ $host = index .hosts .chezmoi.hostname }}{{ end -}}
+{{- $host = merge $host .defaults -}}
+{{- if eq $host.waybar.headset.impl "audeze-maxwell" -}}
 #!/bin/bash
 # Waybar module: Audeze Maxwell battery via headsetcontrol
 #
@@ -57,3 +61,48 @@ else
 fi
 
 echo "{\"text\": \"${icon} ${level}%\", \"tooltip\": \"${device}\\n${level}%\", \"class\": \"${class}\"}"
+{{- else -}}
+#!/bin/bash
+# Waybar module: Bluetooth audio device battery via BlueZ
+# Dynamically discovers connected audio devices (headset/headphones) exposing
+# the org.bluez.Battery1 interface.
+
+ICON="󰋋"
+
+disconnected='{"text": "", "tooltip": "", "class": "disconnected"}'
+
+# Extract device paths (not their children) from busctl tree
+mapfile -t devices < <(
+    busctl tree org.bluez 2>/dev/null \
+        | grep -oP '/org/bluez/hci\d+/dev_[0-9A-F]{2}(?:_[0-9A-F]{2}){5}' \
+        | sort -u
+)
+
+for path in "${devices[@]}"; do
+    connected=$(busctl get-property org.bluez "$path" org.bluez.Device1 Connected 2>/dev/null | awk '{print $2}')
+    [[ "$connected" != "true" ]] && continue
+
+    icon=$(busctl get-property org.bluez "$path" org.bluez.Device1 Icon 2>/dev/null | sed -E 's/^s "//; s/"$//')
+    [[ "$icon" != audio-* ]] && continue
+
+    percent_raw=$(busctl get-property org.bluez "$path" org.bluez.Battery1 Percentage 2>/dev/null)
+    [[ -z "$percent_raw" ]] && continue
+    percent=$(echo "$percent_raw" | awk '{print $2}')
+    [[ -z "$percent" ]] && continue
+
+    name=$(busctl get-property org.bluez "$path" org.bluez.Device1 Alias 2>/dev/null | sed -E 's/^s "//; s/"$//')
+
+    if (( percent <= 10 )); then
+        class="critical"
+    elif (( percent <= 20 )); then
+        class="warning"
+    else
+        class="normal"
+    fi
+
+    echo "{\"text\": \"${ICON} ${percent}%\", \"tooltip\": \"${name}\\n${percent}%\", \"class\": \"${class}\"}"
+    exit 0
+done
+
+echo "$disconnected"
+{{- end }}
