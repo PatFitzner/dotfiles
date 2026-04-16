@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Music Sort
+Comment=Move recent downloads to ~/Music organized by Artist/Album
+Exec=python3 /home/pat/.local/bin/music-sort.py
+Icon=folder-music
+Terminal=true
+Type=Application
+Categories=Utility;AudioVideo;
