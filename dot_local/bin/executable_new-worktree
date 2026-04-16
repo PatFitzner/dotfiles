@@ -3,7 +3,7 @@
 DATA_PLATFORM_DIR="$HOME/gw_code/data-platform"
 MASTER_DIR="$DATA_PLATFORM_DIR/master"
 
-# Fetch latest remote state
+# Fetch latest remote state (must run from inside a worktree)
 cd "$MASTER_DIR" || { notify-send "Error" "Cannot access $MASTER_DIR"; exit 1; }
 git fetch --prune --quiet 2>/dev/null
 
@@ -26,14 +26,29 @@ if [[ -d "$worktree_path" ]]; then
     exit 0
 fi
 
-# Invoke Claude Code Sonnet to create worktree via skill
-cd "$DATA_PLATFORM_DIR" || exit 1
-if claude -p \
-    "Use /worktree-generator. Branch: '$branch', directory: '$dir_name'. Proceed without asking questions." \
-    --model sonnet; then
-    notify-send "Worktree created" "$dir_name"
-    code "$worktree_path"
+# Create worktree — must run from inside an existing worktree (master)
+# The post-checkout hook at .bare/hooks/post-checkout handles setup:
+#   - symlinks .env, .vscode, .tmp from master/
+#   - runs uv sync --frozen to create .venv
+if git branch -r --format='%(refname:short)' | grep -q "^origin/${branch}$"; then
+    git worktree add "$worktree_path" "$branch"
 else
+    git worktree add "$worktree_path" -b "$branch"
+fi
+
+if [[ $? -ne 0 ]]; then
     notify-send "Worktree failed" "Could not create $dir_name"
     exit 1
 fi
+
+# Fallback: if the hook didn't run, set up manually
+if [[ ! -L "$worktree_path/.env" && -f "$MASTER_DIR/.env" ]]; then
+    ln -s "$MASTER_DIR/.env" "$worktree_path/.env"
+fi
+if [[ ! -d "$worktree_path/.venv" ]]; then
+    notify-send "Worktree setup" "Running uv sync for $dir_name..."
+    uv sync --frozen --directory "$worktree_path"
+fi
+
+notify-send "Worktree ready" "$dir_name"
+code "$worktree_path"
